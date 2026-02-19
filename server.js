@@ -1,6 +1,16 @@
+//const express = require('express');
+//const path = require('path');
+//const app = express();
+//const { MercadoPagoConfig, Payment } = require('mercadopago');
+
 const express = require('express');
-const path = require('path');
+const cors = require('cors');
+// ESTA É A LINHA QUE CORRIGE O REFERENCERROR:
+const { MercadoPagoConfig, Payment } = require('mercadopago');
+
 const app = express();
+app.use(cors());
+app.use(express.json());
 
 // Faz o Express servir os arquivos da pasta atual (onde está o index.html)
 app.use(express.static(__dirname));
@@ -8,6 +18,7 @@ app.use(express.static(__dirname));
 // Garante que qualquer rota caia no seu index.html
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
+  res.send("Servidor Rodando com Sucesso!");
 });
 
 const PORT = process.env.PORT || 3000;
