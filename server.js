@@ -1,12 +1,6 @@
-//const express = require('express');
-//const path = require('path');
-//const app = express();
-//const { MercadoPagoConfig, Payment } = require('mercadopago');
-
 const express = require('express');
 const cors = require('cors');
 // ESTA É A LINHA QUE CORRIGE O REFERENCERROR:
-const { MercadoPagoConfig, Payment } = require('mercadopago');
 const { MercadoPagoConfig, Preference } = require('mercadopago');
 
 const app = express();
