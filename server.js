@@ -55,7 +55,10 @@ app.post('/create_preference', async (req, res) => {
         });
 
         // 2. Envia o ID de volta para o front-end
-        res.json({ id: result.id });
+        res.json({ 
+        id: result.id, 
+        init_point: result.init_point 
+        });
 
     } catch (error) {
         // 3. Isso vai mostrar o motivo real do erro nos Logs do Render
