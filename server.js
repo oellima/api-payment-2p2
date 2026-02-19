@@ -1,13 +1,20 @@
 const express = require('express');
-const cors = require('cors');
-const { MercadoPagoConfig, Preference } = require('mercadopago');
-
+const path = require('path');
 const app = express();
-app.use(express.json());
-app.use(cors());
+
+// Faz o Express servir os arquivos da pasta atual (onde está o index.html)
+app.use(express.static(__dirname));
+
+// Garante que qualquer rota caia no seu index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Rodando na porta ${PORT}`));
 
 // 1. ADICIONE SEU ACCESS TOKEN AQUI (Obtenha no Painel do Desenvolvedor do Mercado Pago)
-const client = new MercadoPagoConfig({ accessToken: 'APP_USR-8007647428549032-021910-038fc67b54dae26d351ff13f3d79b8d4-3214466550' });
+const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
 
 app.post('/create_preference', async (req, res) => {
     try {
@@ -44,5 +51,5 @@ app.post('/create_preference', async (req, res) => {
 });
 
 // O Render define a porta automaticamente na variável process.env.PORT
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
+//const PORT = process.env.PORT || 3000;
+//app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
