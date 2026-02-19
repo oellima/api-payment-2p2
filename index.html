@@ -22,6 +22,9 @@
         align-items: center;
         min-height: 100vh;
         margin: 0;
+        /* Adicionado para evitar que o container cole no topo em celulares pequenos */
+        padding: 20px;
+        box-sizing: border-box;
       }
 
       .container {
@@ -32,12 +35,14 @@
         width: 100%;
         max-width: 400px;
         border-top: 5px solid var(--yellow);
+        box-sizing: border-box; /* Garante que o padding não "estoure" a largura */
       }
 
       h2 {
         color: var(--yellow);
         text-align: center;
         margin-bottom: 1.5rem;
+        font-size: 1.8rem; /* Tamanho ajustável */
       }
 
       .form-group {
@@ -53,13 +58,14 @@
 
       input {
         width: 100%;
-        padding: 12px;
+        padding: 14px; /* Aumentado para facilitar o toque no celular */
         border-radius: 6px;
         border: 1px solid #555;
         background-color: #222831;
         color: white;
         box-sizing: border-box;
         transition: border-color 0.3s;
+        font-size: 13px; /* Evita o zoom automático do iPhone ao focar no input */
       }
 
       input:focus {
@@ -69,22 +75,89 @@
 
       button {
         width: 100%;
-        padding: 14px;
+        padding: 16px; /* Mais alto para facilitar o clique com o polegar */
         background-color: var(--yellow);
         color: #000;
         border: none;
         border-radius: 6px;
         font-weight: bold;
-        font-size: 1rem;
+        font-size: 1.1rem;
         cursor: pointer;
         transition:
           transform 0.2s,
           background-color 0.3s;
+        margin-top: 10px;
+        -webkit-tap-highlight-color: transparent; /* Remove o brilho azul ao tocar no mobile */
       }
 
-      button:hover {
-        background-color: #e6b800;
-        transform: translateY(-2px);
+      button:active {
+        transform: scale(0.98); /* Efeito de clique no toque */
+      }
+
+      button {
+        width: 100%;
+        padding: 16px;
+        background-color: var(--yellow);
+        color: #000;
+        border: none;
+        border-radius: 8px;
+        font-weight: 800; /* Deixa o texto mais robusto */
+        font-size: 1.1rem;
+        text-transform: uppercase; /* Dá um ar mais profissional */
+        letter-spacing: 1px;
+        cursor: pointer;
+
+        /* A mágica acontece aqui: transição suave para todas as propriedades */
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* Efeito ao passar o mouse (Hover) */
+      button:hover:not(:disabled) {
+        background-color: #ffdb4d; /* Amarelo mais claro */
+        transform: translateY(-4px); /* Eleva o botão */
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4); /* Sombra mais profunda ao subir */
+      }
+
+      /* Efeito ao clicar (Active) */
+      button:active:not(:disabled) {
+        transform: translateY(
+          -1px
+        ); /* Desce levemente simulando um clique real */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      /* Estilo para quando o botão estiver desativado (enquanto gera o link) */
+      button:disabled {
+        background-color: #555 !important;
+        color: #888;
+        cursor: not-allowed;
+        transform: none !important;
+        box-shadow: none !important;
+        border: 1px solid #444;
+      }
+
+      /* Efeito de brilho passando pelo botão (opcional, dá um toque premium) */
+      button::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: 0.5s;
+      }
+
+      button:hover::after {
+        left: 100%;
       }
 
       .footer-note {
@@ -92,19 +165,57 @@
         text-align: center;
         margin-top: 1.5rem;
         color: #888;
+        line-height: 1.4;
       }
 
       #status {
         margin-top: 1rem;
         text-align: center;
         font-weight: bold;
+        min-height: 20px; /* Evita que o layout "pule" quando o texto aparece */
       }
+
+      /* MEDIA QUERY PARA CELULARES PEQUENOS */
+      @media (max-width: 480px) {
+        .container {
+          padding: 1.5rem; /* Reduz um pouco o recuo interno para ganhar espaço */
+        }
+
+        h2 {
+          font-size: 1.5rem;
+        }
+
+        button {
+          font-size: 0.8rem;
+        }
+      }
+
+      /* Estilos básicos para garantir que o footer fique no fim */
+      body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        margin: 0;
+      }
+      .conteudo {
+        flex: 1;
+      }
+
+      /* ESTILO DO RODAPÉ (COPIE ISTO) */
+      .rodape-desenvolvedor {
+        text-align: center; /* Centraliza horizontalmente */
+        padding: 15px; /* Espaçamento interno */
+        font-size: 0.8rem; /* Tamanho pequeno */
+        color: #555555; /* Cor cinza escuro */
+        margin-top: 50px;
+      }
+
     </style>
   </head>
   <body>
     <div class="container">
       <h2>Enviar Pagamento</h2>
-      <form id="paymentForm">
+      <form id="paymentForm" autocomplete="off">
         <div class="form-group">
           <label for="email">Seu E-mail</label>
           <input
@@ -146,6 +257,10 @@
       </p>
     </div>
 
+    <footer class="rodape-desenvolvedor">
+      Desenvolvido por Leandro Almeida &copy; 2026
+    </footer>
+
     <script>
       document
         .getElementById("paymentForm")
@@ -181,12 +296,16 @@
             // Se você seguiu o código anterior, ele envia data.id.
             if (data.init_point) {
               statusDiv.innerText = "Redirecionando para o pagamento...";
-              // Abre o link do Mercado Pago na mesma aba
+
+              // LIMPA O FORMULÁRIO ANTES DE SAIR
+              document.getElementById("paymentForm").reset();
+
+              // Abre o link do Mercado Pago
               window.location.href = data.init_point;
             } else if (data.id) {
               // Caso o back-end só envie o ID, tente o modal, mas o redirecionamento acima é melhor
               const mp = new MercadoPago(
-                "APP_USR-2bce21e5-f864-42d0-bebb-8e1dd47d0191",
+                "APP_USR-f783e908-5e41-4411-8889-3f3398cfa980",
                 { locale: "pt-BR" },
               );
               mp.checkout({
@@ -207,6 +326,18 @@
             btn.disabled = false;
           }
         });
+      // Garante que o formulário limpe sempre que a página for exibida (inclusive ao voltar)
+      window.addEventListener("pageshow", (event) => {
+        // Se a página for carregada do cache do navegador (botão voltar)
+        document.getElementById("paymentForm").reset();
+
+        // Reseta também o botão e o status
+        const btn = document.getElementById("payBtn");
+        const statusDiv = document.getElementById("status");
+        btn.disabled = false;
+        btn.innerText = "PAGAR COM MERCADO PAGO";
+        statusDiv.innerText = "";
+      });
     </script>
   </body>
 </html>
