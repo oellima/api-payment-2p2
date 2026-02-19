@@ -6,7 +6,7 @@ const app = express();
 app.use(express.static(__dirname));
 
 // Garante que qualquer rota caia no seu index.html
-app.get('*', (req, res) => {
+app.get('/:any*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
