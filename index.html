@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Envio de Pagamento | Checkout</title>
+    <style>
+        :root {
+            --dark-gray: #2c2c2c;
+            --yellow: #ffcc00;
+            --light-blue: #00adb5;
+            --text-white: #eeeeee;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--dark-gray);
+            color: var(--text-white);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #393e46;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 400px;
+            border-top: 5px solid var(--yellow);
+        }
+
+        h2 {
+            color: var(--yellow);
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--light-blue);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #555;
+            background-color: #222831;
+            color: white;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--light-blue);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--yellow);
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #e6b800;
+            transform: translateY(-2px);
+        }
+
+        .footer-note {
+            font-size: 0.75rem;
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #888;
+        }
+
+        #status {
+            margin-top: 1rem;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Enviar Pagamento</h2>
+    <form id="paymentForm">
+        <div class="form-group">
+            <label for="email">Seu E-mail</label>
+            <input type="email" id="email" placeholder="email@exemplo.com" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="amount">Valor (R$)</label>
+            <input type="number" id="amount" placeholder="0.00" step="0.01" min="1" required>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Motivo / Descrição</label>
+            <input type="text" id="description" placeholder="Ex: Doação ou Serviço">
+        </div>
+
+        <button type="submit" id="payBtn">PAGAR COM MERCADO PAGO</button>
+    </form>
+    
+    <div id="status"></div>
+    <p class="footer-note">Segurança garantida via <span style="color: var(--light-blue);">Mercado Pago API</span></p>
+</div>
+
+<script>
+    document.getElementById('paymentForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const statusDiv = document.getElementById('status');
+    const btn = document.getElementById('payBtn');
+    
+    const paymentData = {
+        email: document.getElementById('email').value,
+        amount: document.getElementById('amount').value,
+        description: document.getElementById('description').value
+    };
+
+    statusDiv.style.color = "var(--yellow)";
+    statusDiv.innerText = "Gerando link de pagamento...";
+    btn.disabled = true;
+
+    try {
+        const response = await fetch('http://localhost:3000/create_preference', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(paymentData)
+        });
+
+        const data = await response.json();
+
+        if (data.init_point) {
+            // Redireciona o usuário para o Mercado Pago
+            window.location.href = data.init_point;
+        } else {
+            throw new Error();
+        }
+
+    } catch (error) {
+        statusDiv.style.color = "#ff4d4d";
+        statusDiv.innerText = "Erro ao processar. Verifique o servidor.";
+        btn.disabled = false;
+    }
+});
+</script>
+
+</body>
+</html>
