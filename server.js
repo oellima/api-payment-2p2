@@ -7,6 +7,7 @@ const express = require('express');
 const cors = require('cors');
 // ESTA É A LINHA QUE CORRIGE O REFERENCERROR:
 const { MercadoPagoConfig, Payment } = require('mercadopago');
+const { MercadoPagoConfig, Preference } = require('mercadopago');
 
 const app = express();
 app.use(cors());
@@ -29,21 +30,27 @@ const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN 
 
 app.post('/create_preference', async (req, res) => {
     try {
+        // 1. Verificação básica dos dados vindos do front
+        const { description, amount, email } = req.body;
+
+        if (!amount) {
+            return res.status(400).json({ error: "O preço (amount) é obrigatório" });
+        }
+
         const preference = new Preference(client);
 
         const result = await preference.create({
             body: {
                 items: [
                     {
-                        title: req.body.description || "Pagamento Genérico",
+                        title: description || "Pagamento Genérico",
                         quantity: 1,
-                        unit_price: Number(req.body.amount),
+                        unit_price: Number(amount), // Garante que é número
                         currency_id: 'BRL'
                     }
                 ],
-                payer: {
-                    email: req.body.email
-                },
+                // Só envia o payer se o email estiver presente
+                ...(email && { payer: { email: email } }),
                 back_urls: {
                     success: "https://seusite.com/sucesso",
                     failure: "https://seusite.com/erro",
@@ -53,11 +60,17 @@ app.post('/create_preference', async (req, res) => {
             }
         });
 
-        // Retorna o link de checkout para o front-end
-        res.json({ init_point: result.init_point });
+        // 2. Envia o ID de volta para o front-end
+        res.json({ id: result.id });
+
     } catch (error) {
-        console.error(error);
-        res.status(500).send("Erro ao criar preferência");
+        // 3. Isso vai mostrar o motivo real do erro nos Logs do Render
+        console.error("ERRO DETALHADO DO MERCADO PAGO:", error);
+        
+        res.status(500).json({ 
+            error: "Erro ao processar", 
+            details: error.message 
+        });
     }
 });
 
